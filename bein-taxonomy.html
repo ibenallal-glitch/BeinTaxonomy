@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeIN Sports — Content Taxonomy Architecture</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#0d0d16;--bg3:#12121e;
+  --glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --accent:#C8102E;--accent-dim:rgba(200,16,46,0.15);--accent-glow:rgba(200,16,46,0.3);
+  --text:#e8e8f4;--muted:#7878a0;--dim:#40405a;
+  --c-football:#22c55e;--c-basketball:#f97316;--c-tennis:#eab308;
+  --c-f1:#ef4444;--c-rugby:#a855f7;--c-handball:#3b82f6;
+  --c-boxing:#dc2626;--c-volleyball:#14b8a6;--c-hockey:#94a3b8;
+  --c-baseball:#f59e0b;--c-padel:#06b6d4;--c-olympics:#fbbf24;
+  --c-ctype:#7c3aed;--c-moment:#0891b2;
+  --r-mena:#ef4444;--r-europe:#3b82f6;--r-americas:#22c55e;
+  --r-apac:#a855f7;--r-turkey:#f97316;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+/* ─── ANIMATED BG ─────────────────────────────── */
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(200,16,46,0.07),transparent),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(59,130,246,0.04),transparent);pointer-events:none;z-index:0}
+
+/* ─── HEADER ───────────────────────────────────── */
+header{position:sticky;top:0;z-index:50;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 48px;display:flex;align-items:center;height:64px;gap:20px}
+.logo{display:flex;align-items:center;text-decoration:none}
+.bein-logo-wrap{display:flex;align-items:stretch;border-radius:7px;overflow:hidden;height:38px;box-shadow:0 2px 12px rgba(91,45,142,0.4)}
+.bein-logo-left{background:#fff;color:#5b2d8e;padding:0 11px;display:flex;align-items:center;gap:0;border:2.5px solid #5b2d8e;border-right:none;border-radius:7px 0 0 7px}
+.bein-be{font-style:italic;font-weight:300;font-size:19px;line-height:1;color:#5b2d8e;letter-spacing:-0.5px}
+.bein-in{font-style:italic;font-weight:900;font-size:21px;line-height:1;color:#5b2d8e;letter-spacing:-1px}
+.bein-logo-right{background:#5b2d8e;color:#fff;padding:0 13px;display:flex;align-items:center;font-weight:700;font-size:13px;letter-spacing:3px;border:2.5px solid #5b2d8e;border-radius:0 7px 7px 0}
+.logo-divider{width:1px;height:24px;background:var(--border);margin:0 16px}
+.header-tag{font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.header-badge{background:var(--accent-dim);border:1px solid var(--accent-glow);color:var(--accent);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.nav-pills{display:flex;gap:4px}
+.nav-pill{background:none;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:4px 12px;border-radius:6px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.nav-pill:hover{border-color:var(--border2);color:var(--text)}
+
+/* ─── MAIN ─────────────────────────────────────── */
+main{max-width:1360px;margin:0 auto;padding:52px 24px 80px;position:relative;z-index:1}
+section{margin-bottom:72px}
+.section-header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.section-num{background:var(--accent);color:#fff;font-size:11px;font-weight:800;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--muted)}
+.section-title-bar{flex:1;height:1px;background:linear-gradient(to right,var(--border2),transparent)}
+
+/* ─── PROPOSAL CARDS ───────────────────────────── */
+.proposals{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.prop-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.prop-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),rgba(200,16,46,0));opacity:0;transition:opacity .3s}
+.prop-card:hover{background:var(--glass2);border-color:var(--border2);transform:translateY(-2px)}
+.prop-card.active{border-color:var(--accent);background:rgba(200,16,46,0.06);box-shadow:0 0 40px var(--accent-glow),0 8px 32px rgba(0,0,0,0.4)}
+.prop-card.active::after{opacity:1}
+.prop-letter{display:inline-flex;align-items:center;gap:8px;margin-bottom:12px}
+.prop-letter-badge{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;border:1px solid}
+.prop-a .prop-letter-badge{background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.4);color:#3b82f6}
+.prop-b .prop-letter-badge{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#22c55e}
+.prop-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.prop-a .prop-label{color:#3b82f6}
+.prop-b .prop-label{color:#22c55e}
+.prop-title{font-size:19px;font-weight:800;color:var(--text);margin-bottom:8px;line-height:1.2}
+.prop-desc{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+.best-for-tag{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;margin-bottom:18px;border:1px solid}
+.prop-a .best-for-tag{background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.3);color:#3b82f6}
+.prop-b .best-for-tag{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#22c55e}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pc-col{background:rgba(0,0,0,0.25);border-radius:8px;padding:12px}
+.pc-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.pc-pros .pc-head{color:#22c55e}
+.pc-cons .pc-head{color:#ef4444}
+.pc-col ul{list-style:none}
+.pc-col li{font-size:11.5px;color:var(--muted);padding:3px 0 3px 16px;position:relative;line-height:1.4}
+.pc-pros li::before{content:'✓';position:absolute;left:0;color:#22c55e;font-weight:bold}
+.pc-cons li::before{content:'✗';position:absolute;left:0;color:#ef4444}
+.selected-chip{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;display:none;letter-spacing:.5px}
+.prop-card.active .selected-chip{display:block}
+
+/* ─── TREE WRAPPER ─────────────────────────────── */
+.tree-wrapper{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:32px;min-height:200px}
+.tree-topbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.tree-topbar-title{font-size:15px;font-weight:700;color:var(--text)}
+.tree-topbar-sub{font-size:12px;color:var(--muted);margin-left:4px}
+.tree-actions{margin-left:auto;display:flex;gap:6px}
+.btn{background:var(--glass2);border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .2s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.tree-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);background:rgba(0,0,0,0.2);border-radius:4px;padding:3px 8px}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* placeholder */
+.tree-placeholder{text-align:center;padding:64px 20px;color:var(--muted)}
+.tree-placeholder-icon{font-size:52px;margin-bottom:16px;opacity:.6}
+.tree-placeholder h3{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
+.tree-placeholder p{font-size:13px;max-width:380px;margin:0 auto}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.tree-placeholder .arrow-hint{animation:pulse 2s infinite}
+
+/* ─── TREE NODES ───────────────────────────────── */
+.tree-root>ul{list-style:none;padding:0}
+.tree-ul{list-style:none;padding-left:0;overflow:hidden;max-height:0;transition:max-height .35s ease,opacity .3s ease;opacity:0}
+.tree-ul.open{opacity:1}
+.tree-li{position:relative}
+
+/* connector lines */
+.tree-li+.tree-li>.tree-node::before{content:'';position:absolute;left:calc(var(--depth,0) * 24px + 11px);top:-12px;width:1px;height:12px;background:var(--node-color,var(--dim));opacity:.25}
+
+.tree-node{display:flex;align-items:center;gap:9px;padding:7px 10px 7px calc(var(--depth,0) * 24px + 8px);border-radius:8px;cursor:pointer;transition:background .15s;position:relative;user-select:none}
+.tree-node:hover{background:var(--glass2)}
+.tree-node.active-node{background:rgba(200,16,46,0.07)}
+
+.node-chevron{font-size:9px;color:var(--dim);width:14px;text-align:center;transition:transform .25s;flex-shrink:0}
+.tree-node.expanded>.node-chevron,.tree-node.expanded .node-chevron{transform:rotate(90deg)}
+.node-leaf-dot{width:6px;height:6px;border-radius:50%;background:var(--node-color,var(--dim));flex-shrink:0;margin:0 4px;opacity:.6}
+
+.node-icon{font-size:17px;width:26px;text-align:center;flex-shrink:0;line-height:1}
+.node-label{font-size:13.5px;font-weight:500;color:var(--text);flex:1;min-width:0}
+.node-label.bold{font-weight:700}
+.node-count{font-size:10px;background:rgba(255,255,255,0.06);border-radius:10px;padding:1px 7px;color:var(--muted);flex-shrink:0}
+
+/* datalayer pill */
+.node-dl-key{font-size:10px;font-family:monospace;color:var(--accent);background:rgba(200,16,46,0.1);border:1px solid rgba(200,16,46,0.2);padding:1px 7px;border-radius:4px;flex-shrink:0}
+
+/* datalayer block under leaf */
+.dl-block{padding:6px 10px 6px calc(var(--depth,0) * 24px + 52px);overflow:hidden;max-height:0;transition:max-height .25s ease,opacity .2s ease;opacity:0}
+.dl-block.open{opacity:1}
+.dl-inner{background:rgba(0,0,0,0.4);border:1px solid rgba(200,16,46,0.15);border-radius:6px;padding:8px 12px;font-family:'SF Mono','Fira Code',monospace;font-size:11px;display:flex;flex-wrap:wrap;gap:6px 16px}
+.dl-row{display:flex;align-items:center;gap:4px}
+.dl-k{color:#7cb9e8}.dl-eq{color:var(--dim)}.dl-v{color:#a8e6cf}
+
+/* tooltip */
+.tree-node[data-tip]{position:relative}
+.tree-node[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:20px;background:#1a1a2e;border:1px solid var(--accent);border-radius:8px;padding:7px 11px;font-size:11px;white-space:nowrap;color:var(--text);z-index:200;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.tree-node[data-tip]:hover::after{opacity:1}
+
+/* ─── COVERAGE MAP ─────────────────────────────── */
+.coverage-grid{display:flex;flex-direction:column;gap:16px}
+.region-block{background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:20px 24px}
+.region-block-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.region-block-icon{font-size:20px}
+.region-block-name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
+.region-block-count{font-size:11px;color:var(--muted);background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:10px;margin-left:auto}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.country-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:6px 12px;transition:all .2s;cursor:default}
+.country-chip:hover{background:var(--glass2);border-color:var(--border2);transform:translateY(-1px)}
+.chip-flag{font-size:18px;line-height:1}
+.chip-info{display:flex;flex-direction:column;gap:1px}
+.chip-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.2}
+.chip-sport{font-size:10px;color:var(--muted);line-height:1.2}
+
+/* ─── RECOMMENDATION ───────────────────────────── */
+.rec-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.rec-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:28px}
+.rec-card.analytics{border-top:3px solid #3b82f6}
+.rec-card.personal{border-top:3px solid #22c55e}
+.rec-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px}
+.analytics .rec-type{color:#3b82f6}.personal .rec-type{color:#22c55e}
+.rec-card h3{font-size:20px;font-weight:800;margin-bottom:6px}
+.rec-card p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+.rec-items{list-style:none}
+.rec-items li{font-size:12.5px;color:var(--muted);padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:flex-start;gap:8px;line-height:1.4}
+.rec-items li:last-child{border-bottom:none}
+.rec-icon{flex-shrink:0;font-size:14px}
+.rec-prop-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-top:12px;border:1px solid}
+.analytics .rec-prop-badge{background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.4);color:#3b82f6}
+.personal .rec-prop-badge{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#22c55e}
+
+/* Venn */
+.venn-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px 8px}
+.venn-svg-wrap{position:relative}
+.venn-label-a,.venn-label-b,.venn-label-c{font-size:10px;font-weight:700;text-align:center}
+.venn-label-a{color:#3b82f6}.venn-label-b{color:#22c55e}.venn-label-c{color:var(--muted);font-size:9px}
+.venn-title{font-size:12px;font-weight:700;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:1px}
+
+/* Architecture matrix */
+.matrix-wrap{margin-top:40px}
+.matrix-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;text-align:center}
+.matrix-table{width:100%;border-collapse:collapse}
+.matrix-table th,.matrix-table td{padding:10px 14px;font-size:12px;border:1px solid var(--border);text-align:center}
+.matrix-table th{background:rgba(0,0,0,0.3);color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;font-size:10px}
+.matrix-table td:first-child{text-align:left;font-weight:600;color:var(--text)}
+.cell-yes{color:#22c55e;font-weight:700}
+.cell-partial{color:#f59e0b}
+.cell-no{color:var(--dim)}
+.cell-best{color:#22c55e;font-weight:700}
+
+/* datalayer note */
+.dl-schema-box{background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-top:24px}
+.dl-schema-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.dl-schema-grid{display:flex;flex-wrap:wrap;gap:8px}
+.dl-key-chip{background:rgba(200,16,46,0.1);border:1px solid rgba(200,16,46,0.25);border-radius:6px;padding:4px 10px;font-family:monospace;font-size:11px;color:var(--accent)}
+
+/* responsive */
+@media(max-width:960px){
+  .proposals{grid-template-columns:1fr}
+  .rec-grid{grid-template-columns:1fr}
+  .venn-wrap{order:-1}
+  header{padding:0 20px}
+  main{padding:32px 16px 60px}
+}
+@media(max-width:640px){
+  .pros-cons{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#">
+    <div class="bein-logo-wrap">
+      <div class="bein-logo-left"><span class="bein-be">be</span><span class="bein-in">IN</span></div>
+      <div class="bein-logo-right">SPORTS</div>
+    </div>
+  </a>
+  <div class="logo-divider"></div>
+  <span class="header-tag">Content Taxonomy Architecture</span>
+  <div class="header-right">
+    <span class="header-badge">Data Strategy 2025</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ① DUAL PROPOSALS -->
+  <section id="proposals">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Architecture Proposals</div>
+      <div class="section-title-bar"></div>
+    </div>
+    <div class="proposals">
+      <div class="prop-card prop-a" id="card-a" onclick="selectProposal('A')">
+        <span class="selected-chip">✓ SELECTED</span>
+        <div class="prop-letter">
+          <div class="prop-letter-badge">A</div>
+          <span class="prop-label">Global Taxonomy</span>
+        </div>
+        <h2 class="prop-title">Global Taxonomy +<br>Country Layer</h2>
+        <p class="prop-desc">One universal content tree (Sport → Competition → Team/Player) with a country/region filter overlay applied at query time. The datalayer emits the same keys across all markets; segmentation happens downstream.</p>
+        <div class="best-for-tag">⚡ Best for: Global Analytics &amp; BI Dashboards</div>
+        <div class="pros-cons">
+          <div class="pc-col pc-pros">
+            <div class="pc-head">✓ Pros</div>
+            <ul>
+              <li>Single source of truth for all markets</li>
+              <li>Cross-market performance benchmarking</li>
+              <li>Centralised data governance &amp; taxonomy</li>
+              <li>Simpler datalayer schema to maintain</li>
+              <li>Easier global reporting in tools like GA4, BigQuery</li>
+            </ul>
+          </div>
+          <div class="pc-col pc-cons">
+            <div class="pc-head">✗ Cons</div>
+            <ul>
+              <li>Less granular for local editorial teams</li>
+              <li>Country-specific sports can feel secondary</li>
+              <li>Push notification targeting needs extra logic</li>
+              <li>Higher risk of misclassification at local level</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="prop-card prop-b" id="card-b" onclick="selectProposal('B')">
+        <span class="selected-chip">✓ SELECTED</span>
+        <div class="prop-letter">
+          <div class="prop-letter-badge">B</div>
+          <span class="prop-label">Country-First</span>
+        </div>
+        <h2 class="prop-title">Country-First<br>Segmentation</h2>
+        <p class="prop-desc">The taxonomy root starts with region/country cluster (MENA, Europe, APAC, Americas, Turkey), then branches into the sports and competitions that matter most in that specific market.</p>
+        <div class="best-for-tag">⚡ Best for: Personalisation &amp; Push Notifications</div>
+        <div class="pros-cons">
+          <div class="pc-col pc-pros">
+            <div class="pc-head">✓ Pros</div>
+            <ul>
+              <li>Native fit for personalisation engines &amp; CDPs</li>
+              <li>Reflects actual user interest by market</li>
+              <li>Enables hyper-local editorial curation</li>
+              <li>location_language already in the datalayer</li>
+              <li>Better for targeted push &amp; notification flows</li>
+            </ul>
+          </div>
+          <div class="pc-col pc-cons">
+            <div class="pc-head">✗ Cons</div>
+            <ul>
+              <li>Harder to compare cross-market metrics</li>
+              <li>Taxonomy duplication (UCL appears in every region)</li>
+              <li>Higher maintenance overhead as markets expand</li>
+              <li>Risk of data silos between regions</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② INTERACTIVE TAXONOMY TREE -->
+  <section id="taxonomy">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Interactive Taxonomy Tree</div>
+      <div class="section-title-bar"></div>
+    </div>
+    <div class="tree-wrapper">
+      <div class="tree-topbar">
+        <div>
+          <span class="tree-topbar-title" id="tree-title">Select a proposal above to explore the taxonomy</span>
+          <span class="tree-topbar-sub" id="tree-sub"></span>
+        </div>
+        <div class="tree-actions">
+          <button class="btn" onclick="expandAll()">Expand All</button>
+          <button class="btn" onclick="collapseAll()">Collapse All</button>
+        </div>
+      </div>
+      <div class="tree-legend" id="tree-legend" style="display:none">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-football)"></div>Football</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-basketball)"></div>Basketball</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-tennis)"></div>Tennis</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-f1)"></div>Motorsports</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-rugby)"></div>Rugby</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-handball)"></div>Handball</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-boxing)"></div>Boxing/MMA</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-volleyball)"></div>Volleyball</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-hockey)"></div>Ice Hockey</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-padel)"></div>Padel</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-ctype)"></div>Content Type</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--c-moment)"></div>Consumption Moment</div>
+      </div>
+      <div id="tree-container">
+        <div class="tree-placeholder">
+          <div class="tree-placeholder-icon">🌳</div>
+          <h3>Taxonomy Tree</h3>
+          <p>Select <strong>Proposal A</strong> or <strong>Proposal B</strong> above to render the full interactive taxonomy tree.</p>
+          <div class="arrow-hint" style="margin-top:16px;font-size:22px">↑</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ COUNTRY COVERAGE -->
+  <section id="coverage">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">BeIN Sports — Global Market Coverage</div>
+      <div class="section-title-bar"></div>
+    </div>
+    <div class="coverage-grid" id="coverage-grid"></div>
+  </section>
+
+  <!-- ④ RECOMMENDATION -->
+  <section id="recommendations">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">Our Recommendation</div>
+      <div class="section-title-bar"></div>
+    </div>
+    <div class="rec-grid">
+
+      <div class="rec-card analytics">
+        <div class="rec-type">Data &amp; Analytics Use Cases</div>
+        <h3>→ Use Proposal A</h3>
+        <p>Global taxonomy ensures consistent measurement across all 43+ markets. Essential for comparing UEFA Champions League viewership between MENA and France, or tracking cross-market content performance in BigQuery / GA4.</p>
+        <ul class="rec-items">
+          <li><span class="rec-icon">📊</span>BI dashboards &amp; executive reporting across markets</li>
+          <li><span class="rec-icon">🔬</span>A/B testing content strategies globally</li>
+          <li><span class="rec-icon">📈</span>Content performance benchmarking (UCL in MENA vs EU)</li>
+          <li><span class="rec-icon">🏛️</span>Centralised data governance &amp; taxonomy management</li>
+          <li><span class="rec-icon">🔗</span>Attribution modelling from content → subscription</li>
+          <li><span class="rec-icon">💾</span>Datalayer key: <code style="font-family:monospace;color:var(--accent)">content_competition</code> same value everywhere</li>
+        </ul>
+        <div class="rec-prop-badge">PROPOSAL A — Global Taxonomy</div>
+      </div>
+
+      <div class="rec-card personal">
+        <div class="rec-type">Personalisation &amp; UX Use Cases</div>
+        <h3>→ Use Proposal B</h3>
+        <p>Country-first segmentation enables hyper-local personalisation. A user in Qatar sees a Süper Lig notification only when a Turkish club is involved in a competition they follow — not because Süper Lig ranks globally.</p>
+        <ul class="rec-items">
+          <li><span class="rec-icon">🎯</span>Targeted push notifications by market sport priority</li>
+          <li><span class="rec-icon">🏠</span>Homepage content curation for local editorial teams</li>
+          <li><span class="rec-icon">🤖</span>ML personalisation models (CDPs, recommendation engines)</li>
+          <li><span class="rec-icon">⭐</span>favorite_teams &amp; favorite_competitions UX flows</li>
+          <li><span class="rec-icon">📱</span>App onboarding sport selection by location_language</li>
+          <li><span class="rec-icon">🔔</span>Datalayer key: <code style="font-family:monospace;color:#22c55e">location_language</code> drives segmentation</li>
+        </ul>
+        <div class="rec-prop-badge">PROPOSAL B — Country-First</div>
+      </div>
+    </div>
+
+    <!-- Decision matrix -->
+    <div class="matrix-wrap">
+      <div class="matrix-title">Decision Matrix — When to Use Each Approach</div>
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>Use Case</th>
+            <th>Proposal A<br><span style="color:#3b82f6;font-size:9px">Global Taxonomy</span></th>
+            <th>Proposal B<br><span style="color:#22c55e;font-size:9px">Country-First</span></th>
+            <th>Both Combined</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Global BI dashboards (BigQuery / Looker)</td><td class="cell-best">✅ Perfect fit</td><td class="cell-partial">⚠️ Needs join</td><td class="cell-yes">✅ Best</td></tr>
+          <tr><td>Cross-market UCL performance comparison</td><td class="cell-best">✅ Perfect fit</td><td class="cell-no">✗ Fragmented</td><td class="cell-yes">✅ Best</td></tr>
+          <tr><td>Push notifications (market-specific sport)</td><td class="cell-partial">⚠️ Needs filter</td><td class="cell-best">✅ Perfect fit</td><td class="cell-yes">✅ Best</td></tr>
+          <tr><td>Homepage personalisation (local content)</td><td class="cell-no">✗ Generic</td><td class="cell-best">✅ Perfect fit</td><td class="cell-yes">✅ Best</td></tr>
+          <tr><td>App onboarding — favourite sport selection</td><td class="cell-partial">⚠️ Partial</td><td class="cell-best">✅ Perfect fit</td><td class="cell-yes">✅ Best</td></tr>
+          <tr><td>Data governance &amp; taxonomy maintenance</td><td class="cell-best">✅ Simpler</td><td class="cell-partial">⚠️ Duplication risk</td><td class="cell-partial">⚠️ Moderate</td></tr>
+          <tr><td>CDP audience segmentation</td><td class="cell-partial">⚠️ With segment</td><td class="cell-best">✅ Perfect fit</td><td class="cell-yes">✅ Best</td></tr>
+          <tr><td>A/B test content strategy globally</td><td class="cell-best">✅ Perfect fit</td><td class="cell-no">✗ Siloed</td><td class="cell-yes">✅ Best</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA: PROPOSAL A — GLOBAL TAXONOMY TREE
+// (based on real scraping of beinsports.com)
+// ═══════════════════════════════════════════
+const TREE_A = {
+  id:'root-a', icon:'📺', label:'BeIN Sports — Global Content Taxonomy', type:'root', color:'#C8102E',
+  tip:'43+ countries | All datalayer keys apply globally',
+  children:[
+    { id:'a-football', icon:'⚽', label:'Football', type:'sport', color:'var(--c-football)',
+      tip:'Active in 43+ countries | content_category: "football"',
+      dl:{content_category:'"football"'},
+      count:28,
+      children:[
+        { id:'a-f-global', icon:'🌍', label:'Global Competitions', type:'group', color:'var(--c-football)', children:[
+          { id:'a-ucl', icon:'🏆', label:'UEFA Champions League', type:'competition', color:'var(--c-football)', tip:'43 countries | content_competition: "uefa-champions-league"', dl:{content_competition:'"uefa-champions-league"',content_category:'"football"',content_season:'"2024-25"'} },
+          { id:'a-uel', icon:'🥈', label:'UEFA Europa League', type:'competition', color:'var(--c-football)', tip:'43 countries | content_competition: "europa-league"', dl:{content_competition:'"europa-league"',content_category:'"football"'} },
+          { id:'a-uecl', icon:'🥉', label:'UEFA Conference League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"conference-league"',content_category:'"football"'} },
+          { id:'a-wc26', icon:'🌟', label:'FIFA World Cup 2026', type:'competition', color:'var(--c-football)', tip:'All markets | content_competition: "fifa-world-cup-2026"', dl:{content_competition:'"fifa-world-cup-2026"',content_category:'"football"'} },
+          { id:'a-wcq', icon:'🎯', label:'FIFA World Cup 2026 Qualifiers', type:'competition', color:'var(--c-football)', dl:{content_competition:'"wc-qualifiers-2026"',content_category:'"football"'} },
+        ]},
+        { id:'a-f-eu', icon:'🇪🇺', label:'Top European Leagues', type:'group', color:'var(--c-football)', children:[
+          { id:'a-l1', icon:'🇫🇷', label:'Ligue 1 McDonald\'s', type:'competition', color:'var(--c-football)', tip:'Primary: fr-fr, en-mena | content_competition: "ligue-1"', dl:{content_competition:'"ligue-1"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'a-l2', icon:'🇫🇷', label:'Ligue 2 BKT', type:'competition', color:'var(--c-football)', dl:{content_competition:'"ligue-2"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'a-pl', icon:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', label:'Premier League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"premier-league"',content_category:'"football"'} },
+          { id:'a-ll', icon:'🇪🇸', label:'LALIGA EA SPORTS', type:'competition', color:'var(--c-football)', dl:{content_competition:'"laliga"',content_category:'"football"'} },
+          { id:'a-bl', icon:'🇩🇪', label:'Bundesliga', type:'competition', color:'var(--c-football)', dl:{content_competition:'"bundesliga"',content_category:'"football"'} },
+          { id:'a-lp', icon:'🇵🇹', label:'Liga Portugal Betclic', type:'competition', color:'var(--c-football)', dl:{content_competition:'"liga-portugal"',content_category:'"football"'} },
+          { id:'a-sl', icon:'🇹🇷', label:'Trendyol Süper Lig', type:'competition', color:'var(--c-football)', dl:{content_competition:'"super-lig"',content_category:'"football"'} },
+          { id:'a-fac', icon:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', label:'Emirates FA Cup', type:'competition', color:'var(--c-football)', dl:{content_competition:'"fa-cup"',content_category:'"football"'} },
+          { id:'a-cf', icon:'🇫🇷', label:'Coupe de France Crédit Agricole', type:'competition', color:'var(--c-football)', dl:{content_competition:'"coupe-de-france"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'a-ek', icon:'🇵🇱', label:'PKO BP Ekstraklasa', type:'competition', color:'var(--c-football)', dl:{content_competition:'"ekstraklasa"',content_category:'"football"',location_language:'"en-us"'} },
+        ]},
+        { id:'a-f-af', icon:'🌍', label:'African Football', type:'group', color:'var(--c-football)', children:[
+          { id:'a-caf', icon:'🏆', label:'CAF Champions League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"caf-champions-league"',content_category:'"football"'} },
+          { id:'a-cafcc', icon:'🏆', label:'CAF Confederation Cup', type:'competition', color:'var(--c-football)', dl:{content_competition:'"caf-confederation-cup"',content_category:'"football"'} },
+          { id:'a-afcon', icon:'🌍', label:'AFCON Morocco 2025', type:'competition', color:'var(--c-football)', tip:'Primary: MENA, Americas | content_competition: "afcon-2025"', dl:{content_competition:'"afcon-2025"',content_category:'"football"'} },
+        ]},
+        { id:'a-f-as', icon:'🌏', label:'Asian Football', type:'group', color:'var(--c-football)', children:[
+          { id:'a-afc', icon:'🏆', label:'AFC Champions League Elite', type:'competition', color:'var(--c-football)', dl:{content_competition:'"afc-champions-league-elite"',content_category:'"football"'} },
+        ]},
+        { id:'a-f-am', icon:'🌎', label:'Americas Football', type:'group', color:'var(--c-football)', children:[
+          { id:'a-clib', icon:'🏆', label:'Copa Libertadores', type:'competition', color:'var(--c-football)', dl:{content_competition:'"copa-libertadores"',content_category:'"football"'} },
+          { id:'a-csud', icon:'🏆', label:'Copa Sudamericana', type:'competition', color:'var(--c-football)', dl:{content_competition:'"copa-sudamericana"',content_category:'"football"'} },
+        ]},
+      ]
+    },
+    { id:'a-basketball', icon:'🏀', label:'Basketball', type:'sport', color:'var(--c-basketball)',
+      tip:'Active in MENA, Europe, Americas | content_category: "basketball"',
+      dl:{content_category:'"basketball"'}, count:1,
+      children:[
+        { id:'a-nba', icon:'🏆', label:'NBA', type:'competition', color:'var(--c-basketball)', tip:'All major markets | content_competition: "nba"', dl:{content_competition:'"nba"',content_category:'"basketball"'} },
+      ]
+    },
+    { id:'a-tennis', icon:'🎾', label:'Tennis', type:'sport', color:'var(--c-tennis)',
+      dl:{content_category:'"tennis"'}, count:5,
+      children:[
+        { id:'a-wim', icon:'🌿', label:'Wimbledon 2026', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"wimbledon"',content_category:'"tennis"'} },
+        { id:'a-rg', icon:'🎾', label:'Roland Garros', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"roland-garros"',content_category:'"tennis"'} },
+        { id:'a-ao', icon:'🇦🇺', label:'Australian Open', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"australian-open"',content_category:'"tennis"'} },
+        { id:'a-uso', icon:'🇺🇸', label:'US Open', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"us-open"',content_category:'"tennis"'} },
+        { id:'a-wta', icon:'🎾', label:'WTA Tour', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"wta-tour"',content_category:'"tennis"'} },
+      ]
+    },
+    { id:'a-motorsports', icon:'🏎️', label:'Motorsports', type:'sport', color:'var(--c-f1)',
+      dl:{content_category:'"motorsports"'}, count:1,
+      children:[
+        { id:'a-f1', icon:'🏎️', label:'Formula 1', type:'competition', color:'var(--c-f1)', tip:'All markets | content_competition: "formula-1"', dl:{content_competition:'"formula-1"',content_category:'"motorsports"'} },
+      ]
+    },
+    { id:'a-rugby', icon:'🏉', label:'Rugby', type:'sport', color:'var(--c-rugby)',
+      tip:'Primary: Europe (France) | content_category: "rugby"',
+      dl:{content_category:'"rugby"'}, count:2,
+      children:[
+        { id:'a-icc', icon:'🏆', label:'Investec Champions Cup', type:'competition', color:'var(--c-rugby)', dl:{content_competition:'"champions-cup"',content_category:'"rugby"',location_language:'"fr-fr"'} },
+        { id:'a-ecc', icon:'🏆', label:'EPCR Challenge Cup', type:'competition', color:'var(--c-rugby)', dl:{content_competition:'"challenge-cup"',content_category:'"rugby"',location_language:'"fr-fr"'} },
+      ]
+    },
+    { id:'a-handball', icon:'🤾', label:'Handball', type:'sport', color:'var(--c-handball)',
+      tip:'Primary: France, MENA | content_category: "handball"',
+      dl:{content_category:'"handball"'}, count:2,
+      children:[
+        { id:'a-sl2', icon:'🏆', label:'Liqui Moly Starligue', type:'competition', color:'var(--c-handball)', dl:{content_competition:'"starligue"',content_category:'"handball"',location_language:'"fr-fr"'} },
+        { id:'a-lbe', icon:'🏆', label:'Ligue Butagaz Energie', type:'competition', color:'var(--c-handball)', dl:{content_competition:'"ligue-butagaz-energie"',content_category:'"handball"',location_language:'"fr-fr"'} },
+      ]
+    },
+    { id:'a-boxing', icon:'🥊', label:'Boxing & MMA', type:'sport', color:'var(--c-boxing)',
+      dl:{content_category:'"boxing"'}, count:1,
+      children:[
+        { id:'a-one', icon:'🥊', label:'ONE Championship', type:'competition', color:'var(--c-boxing)', tip:'Active: MENA, Americas | content_competition: "one-championship"', dl:{content_competition:'"one-championship"',content_category:'"boxing"'} },
+      ]
+    },
+    { id:'a-volleyball', icon:'🏐', label:'Volleyball', type:'sport', color:'var(--c-volleyball)',
+      tip:'Primary: Turkey, France | content_category: "volleyball"',
+      dl:{content_category:'"volleyball"'}, count:1,
+      children:[
+        { id:'a-spike', icon:'🏆', label:'Marmara SpikeLigue', type:'competition', color:'var(--c-volleyball)', dl:{content_competition:'"spikeligue"',content_category:'"volleyball"'} },
+      ]
+    },
+    { id:'a-hockey', icon:'🏒', label:'Ice Hockey', type:'sport', color:'var(--c-hockey)',
+      tip:'Primary: France, Americas | content_category: "ice-hockey"',
+      dl:{content_category:'"ice-hockey"'}, count:1,
+      children:[
+        { id:'a-nhl', icon:'🏒', label:'NHL', type:'competition', color:'var(--c-hockey)', dl:{content_competition:'"nhl"',content_category:'"ice-hockey"'} },
+      ]
+    },
+    { id:'a-baseball', icon:'⚾', label:'Baseball', type:'sport', color:'var(--c-baseball)',
+      tip:'Primary: France | content_category: "baseball"',
+      dl:{content_category:'"baseball"'}, count:1,
+      children:[
+        { id:'a-mlb', icon:'⚾', label:'MLB', type:'competition', color:'var(--c-baseball)', dl:{content_competition:'"mlb"',content_category:'"baseball"',location_language:'"fr-fr"'} },
+      ]
+    },
+    { id:'a-padel', icon:'🏓', label:'Padel', type:'sport', color:'var(--c-padel)',
+      tip:'Active: MENA, Americas, APAC | content_category: "padel"',
+      dl:{content_category:'"padel"'}, count:1,
+      children:[
+        { id:'a-pp', icon:'🏆', label:'Premier Padel', type:'competition', color:'var(--c-padel)', dl:{content_competition:'"premier-padel"',content_category:'"padel"'} },
+      ]
+    },
+    { id:'a-olympics', icon:'🏅', label:'Olympics', type:'sport', color:'var(--c-olympics)',
+      dl:{content_category:'"olympics"'}, count:1,
+      children:[
+        { id:'a-wo26', icon:'❄️', label:'Winter Olympics Milan-Cortina 2026', type:'competition', color:'var(--c-olympics)', dl:{content_competition:'"winter-olympics-2026"',content_category:'"olympics"'} },
+      ]
+    },
+    { id:'a-content-type', icon:'📄', label:'Content Type', type:'dimension', color:'var(--c-ctype)',
+      tip:'All markets | datalayer key: content_type',
+      dl:{content_type:'various'}, count:6,
+      children:[
+        { id:'a-ct-live', icon:'🔴', label:'Live Stream', type:'content', color:'var(--c-ctype)', tip:'Real-time match broadcast | content_type: "live"', dl:{content_type:'"live"',content_match_page_type:'"live"'} },
+        { id:'a-ct-replay', icon:'▶️', label:'Replay / VOD', type:'content', color:'var(--c-ctype)', dl:{content_type:'"replay"',content_category:'"any sport"'} },
+        { id:'a-ct-short', icon:'📱', label:'Short', type:'content', color:'var(--c-ctype)', tip:'Vertical short-form | content_type: "short"', dl:{content_type:'"short"',content_category:'"any sport"'} },
+        { id:'a-ct-article', icon:'📰', label:'Article / News', type:'content', color:'var(--c-ctype)', dl:{content_type:'"article"',content_tag:'"news | transfer | injury"'} },
+        { id:'a-ct-video', icon:'🎬', label:'Video Feature', type:'content', color:'var(--c-ctype)', dl:{content_type:'"video"',content_tag:'"interview | highlight | documentary"'} },
+        { id:'a-ct-podcast', icon:'🎙️', label:'Podcast', type:'content', color:'var(--c-ctype)', dl:{content_type:'"podcast"',content_tag:'"audio | show"'} },
+      ]
+    },
+    { id:'a-moment', icon:'⏱️', label:'Consumption Moment', type:'dimension', color:'var(--c-moment)',
+      tip:'All markets | datalayer key: content_match_page_type',
+      dl:{content_match_page_type:'various'}, count:4,
+      children:[
+        { id:'a-cm-pre', icon:'⏳', label:'Pre-match', type:'moment', color:'var(--c-moment)', tip:'content_match_page_type: "pre-match"', dl:{content_match_page_type:'"pre-match"',content_tag:'"preview | lineup | odds"'} },
+        { id:'a-cm-live2', icon:'🔴', label:'Live / During match', type:'moment', color:'var(--c-moment)', dl:{content_match_page_type:'"live"',content_tag:'"live-blog | score-update"'} },
+        { id:'a-cm-post', icon:'🏁', label:'Post-match', type:'moment', color:'var(--c-moment)', dl:{content_match_page_type:'"post-match"',content_tag:'"recap | highlights | result"'} },
+        { id:'a-cm-analysis', icon:'📊', label:'Analysis / Review', type:'moment', color:'var(--c-moment)', dl:{content_match_page_type:'"analysis"',content_tag:'"tactics | stats | opinion"'} },
+      ]
+    },
+  ]
+};
+
+// ═══════════════════════════════════════════
+// HELPER — generates Content Type + Moment nodes per region
+// ═══════════════════════════════════════════
+function makeCTMoment(p, lang) {
+  return [
+    { id:p+'-ct', icon:'📄', label:'Content Type', type:'dimension', color:'var(--c-ctype)',
+      tip:'datalayer key: content_type | '+lang,
+      children:[
+        { id:p+'-ct-live',    icon:'🔴', label:'Live Stream',    type:'content', color:'var(--c-ctype)', dl:{content_type:'"live"',   content_match_page_type:'"live"',   location_language:lang} },
+        { id:p+'-ct-replay',  icon:'▶️',  label:'Replay / VOD',  type:'content', color:'var(--c-ctype)', dl:{content_type:'"replay"', location_language:lang} },
+        { id:p+'-ct-short',   icon:'📱', label:'Short',          type:'content', color:'var(--c-ctype)', dl:{content_type:'"short"',  location_language:lang} },
+        { id:p+'-ct-article', icon:'📰', label:'Article / News', type:'content', color:'var(--c-ctype)', dl:{content_type:'"article"',content_tag:'"news | transfer"', location_language:lang} },
+        { id:p+'-ct-video',   icon:'🎬', label:'Video Feature',  type:'content', color:'var(--c-ctype)', dl:{content_type:'"video"',  content_tag:'"highlight | interview"', location_language:lang} },
+        { id:p+'-ct-podcast', icon:'🎙️', label:'Podcast',        type:'content', color:'var(--c-ctype)', dl:{content_type:'"podcast"',location_language:lang} },
+      ]
+    },
+    { id:p+'-mom', icon:'⏱️', label:'Consumption Moment', type:'dimension', color:'var(--c-moment)',
+      tip:'datalayer key: content_match_page_type | '+lang,
+      children:[
+        { id:p+'-mom-pre',      icon:'⏳', label:'Pre-match',          type:'moment', color:'var(--c-moment)', dl:{content_match_page_type:'"pre-match"', content_tag:'"preview | lineup"', location_language:lang} },
+        { id:p+'-mom-live',     icon:'🔴', label:'Live / During match',type:'moment', color:'var(--c-moment)', dl:{content_match_page_type:'"live"',      content_tag:'"live-blog | score"',location_language:lang} },
+        { id:p+'-mom-post',     icon:'🏁', label:'Post-match',         type:'moment', color:'var(--c-moment)', dl:{content_match_page_type:'"post-match"',content_tag:'"recap | highlights"',location_language:lang} },
+        { id:p+'-mom-analysis', icon:'📊', label:'Analysis / Review',  type:'moment', color:'var(--c-moment)', dl:{content_match_page_type:'"analysis"',  content_tag:'"tactics | stats"',  location_language:lang} },
+      ]
+    },
+  ];
+}
+
+// ═══════════════════════════════════════════
+// DATA: PROPOSAL B — COUNTRY-FIRST TREE
+// ═══════════════════════════════════════════
+const TREE_B = {
+  id:'root-b', icon:'🌐', label:'BeIN Sports — Country-First Segmentation', type:'root', color:'#C8102E',
+  tip:'43+ countries | location_language drives the root split',
+  children:[
+    { id:'b-mena', icon:'🌍', label:'MENA', type:'region', color:'var(--r-mena)',
+      tip:'18 markets | location_language: "en-mena" / "ar-mena"',
+      dl:{location_language:'"en-mena" | "ar-mena"'}, count:18,
+      children:[
+        { id:'b-mena-ft', icon:'⚽', label:'Football (Primary)', type:'sport', color:'var(--c-football)', dl:{content_category:'"football"',location_language:'"en-mena"'}, children:[
+          { id:'b-mena-ucl', icon:'🏆', label:'UEFA Champions League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"uefa-champions-league"',content_category:'"football"',location_language:'"en-mena"'} },
+          { id:'b-mena-pl', icon:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', label:'Premier League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"premier-league"',content_category:'"football"',location_language:'"en-mena"'} },
+          { id:'b-mena-ll', icon:'🇪🇸', label:'La Liga', type:'competition', color:'var(--c-football)', dl:{content_competition:'"laliga"',content_category:'"football"',location_language:'"en-mena"'} },
+          { id:'b-mena-l1', icon:'🇫🇷', label:'Ligue 1', type:'competition', color:'var(--c-football)', dl:{content_competition:'"ligue-1"',content_category:'"football"',location_language:'"en-mena"'} },
+          { id:'b-mena-caf', icon:'🌍', label:'CAF Champions League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"caf-champions-league"',content_category:'"football"',location_language:'"en-mena"'} },
+          { id:'b-mena-afc', icon:'🌏', label:'AFC Champions League Elite', type:'competition', color:'var(--c-football)', dl:{content_competition:'"afc-champions-league-elite"',content_category:'"football"',location_language:'"en-mena"'} },
+          { id:'b-mena-afcon', icon:'🌍', label:'AFCON Morocco 2025', type:'competition', color:'var(--c-football)', dl:{content_competition:'"afcon-2025"',content_category:'"football"',location_language:'"en-mena"'} },
+          { id:'b-mena-copa', icon:'🌎', label:'Copa Libertadores', type:'competition', color:'var(--c-football)', dl:{content_competition:'"copa-libertadores"',content_category:'"football"',location_language:'"en-mena"'} },
+          { id:'b-mena-wc', icon:'🌟', label:'FIFA World Cup 2026', type:'competition', color:'var(--c-football)', dl:{content_competition:'"fifa-world-cup-2026"',content_category:'"football"',location_language:'"en-mena"'} },
+        ]},
+        { id:'b-mena-tn', icon:'🎾', label:'Tennis', type:'sport', color:'var(--c-tennis)', children:[
+          { id:'b-mena-wim', icon:'🌿', label:'Wimbledon', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"wimbledon"',content_category:'"tennis"',location_language:'"en-mena"'} },
+          { id:'b-mena-rg', icon:'🎾', label:'Roland Garros', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"roland-garros"',content_category:'"tennis"',location_language:'"en-mena"'} },
+          { id:'b-mena-ao', icon:'🇦🇺', label:'Australian Open', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"australian-open"',content_category:'"tennis"',location_language:'"en-mena"'} },
+        ]},
+        { id:'b-mena-bk', icon:'🏀', label:'Basketball', type:'sport', color:'var(--c-basketball)', children:[
+          { id:'b-mena-nba', icon:'🏆', label:'NBA', type:'competition', color:'var(--c-basketball)', dl:{content_competition:'"nba"',content_category:'"basketball"',location_language:'"en-mena"'} },
+        ]},
+        { id:'b-mena-f1', icon:'🏎️', label:'Motorsports', type:'sport', color:'var(--c-f1)', children:[
+          { id:'b-mena-f1r', icon:'🏎️', label:'Formula 1', type:'competition', color:'var(--c-f1)', dl:{content_competition:'"formula-1"',content_category:'"motorsports"',location_language:'"en-mena"'} },
+        ]},
+        { id:'b-mena-box', icon:'🥊', label:'Boxing & MMA', type:'sport', color:'var(--c-boxing)', children:[
+          { id:'b-mena-one', icon:'🥊', label:'ONE Championship', type:'competition', color:'var(--c-boxing)', dl:{content_competition:'"one-championship"',content_category:'"boxing"',location_language:'"en-mena"'} },
+        ]},
+        { id:'b-mena-pad', icon:'🏓', label:'Padel', type:'sport', color:'var(--c-padel)', children:[
+          { id:'b-mena-pp', icon:'🏆', label:'Premier Padel', type:'competition', color:'var(--c-padel)', dl:{content_competition:'"premier-padel"',content_category:'"padel"',location_language:'"en-mena"'} },
+        ]},
+        ...makeCTMoment('rmena','"en-mena"'),
+      ]
+    },
+    { id:'b-europe', icon:'🌍', label:'Europe  (France · Spain)', type:'region', color:'var(--r-europe)',
+      tip:'2 markets | location_language: "fr-fr"',
+      dl:{location_language:'"fr-fr"'}, count:2,
+      children:[
+        { id:'b-eu-ft', icon:'⚽', label:'Football (Primary)', type:'sport', color:'var(--c-football)', dl:{content_category:'"football"',location_language:'"fr-fr"'}, children:[
+          { id:'b-eu-l1', icon:'🇫🇷', label:'Ligue 1 McDonald\'s', type:'competition', color:'var(--c-football)', dl:{content_competition:'"ligue-1"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'b-eu-l2', icon:'🇫🇷', label:'Ligue 2 BKT', type:'competition', color:'var(--c-football)', dl:{content_competition:'"ligue-2"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'b-eu-cf', icon:'🇫🇷', label:'Coupe de France Crédit Agricole', type:'competition', color:'var(--c-football)', dl:{content_competition:'"coupe-de-france"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'b-eu-la', icon:'🇪🇸', label:'LALIGA EA SPORTS', type:'competition', color:'var(--c-football)', dl:{content_competition:'"laliga"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'b-eu-bl', icon:'🇩🇪', label:'Bundesliga', type:'competition', color:'var(--c-football)', dl:{content_competition:'"bundesliga"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'b-eu-lp', icon:'🇵🇹', label:'Liga Portugal Betclic', type:'competition', color:'var(--c-football)', dl:{content_competition:'"liga-portugal"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'b-eu-ucl', icon:'🏆', label:'UEFA Champions League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"uefa-champions-league"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'b-eu-fac', icon:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', label:'Emirates FA Cup', type:'competition', color:'var(--c-football)', dl:{content_competition:'"fa-cup"',content_category:'"football"',location_language:'"fr-fr"'} },
+          { id:'b-eu-sl', icon:'🇹🇷', label:'Trendyol Süper Lig', type:'competition', color:'var(--c-football)', dl:{content_competition:'"super-lig"',content_category:'"football"',location_language:'"fr-fr"'} },
+        ]},
+        { id:'b-eu-rug', icon:'🏉', label:'Rugby', type:'sport', color:'var(--c-rugby)', dl:{content_category:'"rugby"',location_language:'"fr-fr"'}, children:[
+          { id:'b-eu-icc', icon:'🏆', label:'Investec Champions Cup', type:'competition', color:'var(--c-rugby)', dl:{content_competition:'"champions-cup"',content_category:'"rugby"',location_language:'"fr-fr"'} },
+          { id:'b-eu-ecc', icon:'🏆', label:'EPCR Challenge Cup', type:'competition', color:'var(--c-rugby)', dl:{content_competition:'"challenge-cup"',content_category:'"rugby"',location_language:'"fr-fr"'} },
+        ]},
+        { id:'b-eu-tn', icon:'🎾', label:'Tennis', type:'sport', color:'var(--c-tennis)', children:[
+          { id:'b-eu-wim', icon:'🌿', label:'Wimbledon 2026', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"wimbledon"',content_category:'"tennis"',location_language:'"fr-fr"'} },
+          { id:'b-eu-wta', icon:'🎾', label:'WTA Tour', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"wta-tour"',content_category:'"tennis"',location_language:'"fr-fr"'} },
+        ]},
+        { id:'b-eu-hb', icon:'🤾', label:'Handball', type:'sport', color:'var(--c-handball)', children:[
+          { id:'b-eu-sl2', icon:'🏆', label:'Liqui Moly Starligue', type:'competition', color:'var(--c-handball)', dl:{content_competition:'"starligue"',content_category:'"handball"',location_language:'"fr-fr"'} },
+          { id:'b-eu-lbe', icon:'🏆', label:'Ligue Butagaz Energie', type:'competition', color:'var(--c-handball)', dl:{content_competition:'"ligue-butagaz-energie"',content_category:'"handball"',location_language:'"fr-fr"'} },
+        ]},
+        { id:'b-eu-bk', icon:'🏀', label:'Basketball', type:'sport', color:'var(--c-basketball)', children:[
+          { id:'b-eu-nba', icon:'🏆', label:'NBA', type:'competition', color:'var(--c-basketball)', dl:{content_competition:'"nba"',content_category:'"basketball"',location_language:'"fr-fr"'} },
+        ]},
+        { id:'b-eu-hk', icon:'🏒', label:'Ice Hockey', type:'sport', color:'var(--c-hockey)', children:[
+          { id:'b-eu-nhl', icon:'🏒', label:'NHL', type:'competition', color:'var(--c-hockey)', dl:{content_competition:'"nhl"',content_category:'"ice-hockey"',location_language:'"fr-fr"'} },
+        ]},
+        { id:'b-eu-bb', icon:'⚾', label:'Baseball', type:'sport', color:'var(--c-baseball)', children:[
+          { id:'b-eu-mlb', icon:'⚾', label:'MLB', type:'competition', color:'var(--c-baseball)', dl:{content_competition:'"mlb"',content_category:'"baseball"',location_language:'"fr-fr"'} },
+        ]},
+        { id:'b-eu-vol', icon:'🏐', label:'Volleyball', type:'sport', color:'var(--c-volleyball)', children:[
+          { id:'b-eu-spike', icon:'🏆', label:'Marmara SpikeLigue', type:'competition', color:'var(--c-volleyball)', dl:{content_competition:'"spikeligue"',content_category:'"volleyball"',location_language:'"fr-fr"'} },
+        ]},
+        ...makeCTMoment('reur','"fr-fr"'),
+      ]
+    },
+    { id:'b-americas', icon:'🌎', label:'Americas  (USA · Canada)', type:'region', color:'var(--r-americas)',
+      tip:'2 markets | location_language: "en-us"',
+      dl:{location_language:'"en-us"'}, count:2,
+      children:[
+        { id:'b-am-ft', icon:'⚽', label:'Football / Soccer (Primary)', type:'sport', color:'var(--c-football)', dl:{content_category:'"football"',location_language:'"en-us"'}, children:[
+          { id:'b-am-cl', icon:'🌎', label:'Copa Libertadores', type:'competition', color:'var(--c-football)', dl:{content_competition:'"copa-libertadores"',content_category:'"football"',location_language:'"en-us"'} },
+          { id:'b-am-cs', icon:'🌎', label:'Copa Sudamericana', type:'competition', color:'var(--c-football)', dl:{content_competition:'"copa-sudamericana"',content_category:'"football"',location_language:'"en-us"'} },
+          { id:'b-am-l1', icon:'🇫🇷', label:'Ligue 1', type:'competition', color:'var(--c-football)', dl:{content_competition:'"ligue-1"',content_category:'"football"',location_language:'"en-us"'} },
+          { id:'b-am-sl', icon:'🇹🇷', label:'Trendyol Süper Lig', type:'competition', color:'var(--c-football)', dl:{content_competition:'"super-lig"',content_category:'"football"',location_language:'"en-us"'} },
+          { id:'b-am-ll', icon:'🇪🇸', label:'LaLiga', type:'competition', color:'var(--c-football)', dl:{content_competition:'"laliga"',content_category:'"football"',location_language:'"en-us"'} },
+          { id:'b-am-ucl', icon:'🏆', label:'UEFA Champions League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"uefa-champions-league"',content_category:'"football"',location_language:'"en-us"'} },
+          { id:'b-am-ek', icon:'🇵🇱', label:'PKO BP Ekstraklasa', type:'competition', color:'var(--c-football)', dl:{content_competition:'"ekstraklasa"',content_category:'"football"',location_language:'"en-us"'} },
+          { id:'b-am-afcon', icon:'🌍', label:'CAF Africa Cup of Nations', type:'competition', color:'var(--c-football)', dl:{content_competition:'"afcon-2025"',content_category:'"football"',location_language:'"en-us"'} },
+        ]},
+        { id:'b-am-tn', icon:'🎾', label:'Tennis', type:'sport', color:'var(--c-tennis)', children:[
+          { id:'b-am-wim', icon:'🌿', label:'Wimbledon', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"wimbledon"',content_category:'"tennis"',location_language:'"en-us"'} },
+          { id:'b-am-uso', icon:'🇺🇸', label:'US Open', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"us-open"',content_category:'"tennis"',location_language:'"en-us"'} },
+        ]},
+        { id:'b-am-pad', icon:'🏓', label:'Padel', type:'sport', color:'var(--c-padel)', children:[
+          { id:'b-am-pp', icon:'🏆', label:'Premier Padel', type:'competition', color:'var(--c-padel)', dl:{content_competition:'"premier-padel"',content_category:'"padel"',location_language:'"en-us"'} },
+        ]},
+        { id:'b-am-mma', icon:'🥊', label:'MMA / Boxing', type:'sport', color:'var(--c-boxing)', children:[
+          { id:'b-am-one', icon:'🥊', label:'ONE Championship', type:'competition', color:'var(--c-boxing)', dl:{content_competition:'"one-championship"',content_category:'"boxing"',location_language:'"en-us"'} },
+        ]},
+        { id:'b-am-f1', icon:'🏎️', label:'Motorsports', type:'sport', color:'var(--c-f1)', children:[
+          { id:'b-am-f1r', icon:'🏎️', label:'Formula 1', type:'competition', color:'var(--c-f1)', dl:{content_competition:'"formula-1"',content_category:'"motorsports"',location_language:'"en-us"'} },
+        ]},
+        ...makeCTMoment('ram','"en-us"'),
+      ]
+    },
+    { id:'b-apac', icon:'🌏', label:'Asia-Pacific', type:'region', color:'var(--r-apac)',
+      tip:'7 markets: Malaysia, Indonesia, Philippines, Thailand, Hong Kong, Australia, NZ',
+      dl:{location_language:'"en-au" | "en-hk"'}, count:7,
+      children:[
+        { id:'b-ap-ft', icon:'⚽', label:'Football', type:'sport', color:'var(--c-football)', children:[
+          { id:'b-ap-afc', icon:'🌏', label:'AFC Champions League Elite', type:'competition', color:'var(--c-football)', dl:{content_competition:'"afc-champions-league-elite"',content_category:'"football"'} },
+          { id:'b-ap-pl', icon:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', label:'Premier League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"premier-league"',content_category:'"football"'} },
+          { id:'b-ap-ucl', icon:'🏆', label:'UEFA Champions League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"uefa-champions-league"',content_category:'"football"'} },
+          { id:'b-ap-wc', icon:'🌟', label:'FIFA World Cup 2026', type:'competition', color:'var(--c-football)', dl:{content_competition:'"fifa-world-cup-2026"',content_category:'"football"'} },
+        ]},
+        { id:'b-ap-tn', icon:'🎾', label:'Tennis', type:'sport', color:'var(--c-tennis)', children:[
+          { id:'b-ap-ao', icon:'🇦🇺', label:'Australian Open', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"australian-open"',content_category:'"tennis"'} },
+          { id:'b-ap-wim', icon:'🌿', label:'Wimbledon', type:'competition', color:'var(--c-tennis)', dl:{content_competition:'"wimbledon"',content_category:'"tennis"'} },
+        ]},
+        { id:'b-ap-f1', icon:'🏎️', label:'Motorsports', type:'sport', color:'var(--c-f1)', children:[
+          { id:'b-ap-f1r', icon:'🏎️', label:'Formula 1', type:'competition', color:'var(--c-f1)', dl:{content_competition:'"formula-1"',content_category:'"motorsports"'} },
+        ]},
+        { id:'b-ap-pad', icon:'🏓', label:'Padel', type:'sport', color:'var(--c-padel)', children:[
+          { id:'b-ap-pp', icon:'🏆', label:'Premier Padel', type:'competition', color:'var(--c-padel)', dl:{content_competition:'"premier-padel"',content_category:'"padel"'} },
+        ]},
+        ...makeCTMoment('rapac','"en-au"'),
+      ]
+    },
+    { id:'b-turkey', icon:'🇹🇷', label:'Turkey', type:'region', color:'var(--r-turkey)',
+      tip:'Standalone major market | location_language: "tr-tr"',
+      dl:{location_language:'"tr-tr"'}, count:1,
+      children:[
+        { id:'b-tr-ft', icon:'⚽', label:'Football (Primary)', type:'sport', color:'var(--c-football)', dl:{content_category:'"football"',location_language:'"tr-tr"'}, children:[
+          { id:'b-tr-sl', icon:'🇹🇷', label:'Trendyol Süper Lig', type:'competition', color:'var(--c-football)', dl:{content_competition:'"super-lig"',content_category:'"football"',location_language:'"tr-tr"'} },
+          { id:'b-tr-ucl', icon:'🏆', label:'UEFA Champions League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"uefa-champions-league"',content_category:'"football"',location_language:'"tr-tr"'} },
+          { id:'b-tr-uel', icon:'🥈', label:'UEFA Europa League', type:'competition', color:'var(--c-football)', dl:{content_competition:'"europa-league"',content_category:'"football"',location_language:'"tr-tr"'} },
+        ]},
+        { id:'b-tr-vol', icon:'🏐', label:'Volleyball', type:'sport', color:'var(--c-volleyball)', children:[
+          { id:'b-tr-spike', icon:'🏆', label:'Marmara SpikeLigue', type:'competition', color:'var(--c-volleyball)', dl:{content_competition:'"spikeligue"',content_category:'"volleyball"',location_language:'"tr-tr"'} },
+        ]},
+        { id:'b-tr-bk', icon:'🏀', label:'Basketball', type:'sport', color:'var(--c-basketball)', children:[
+          { id:'b-tr-nba', icon:'🏆', label:'NBA', type:'competition', color:'var(--c-basketball)', dl:{content_competition:'"nba"',content_category:'"basketball"',location_language:'"tr-tr"'} },
+        ]},
+        { id:'b-tr-f1', icon:'🏎️', label:'Motorsports', type:'sport', color:'var(--c-f1)', children:[
+          { id:'b-tr-f1r', icon:'🏎️', label:'Formula 1', type:'competition', color:'var(--c-f1)', dl:{content_competition:'"formula-1"',content_category:'"motorsports"',location_language:'"tr-tr"'} },
+        ]},
+        ...makeCTMoment('rtr','"tr-tr"'),
+      ]
+    },
+  ]
+};
+
+// ═══════════════════════════════════════════
+// COUNTRY COVERAGE DATA
+// ═══════════════════════════════════════════
+const COVERAGE = [
+  { region:'🌍 MENA', color:'var(--r-mena)', countries:[
+    {flag:'🇶🇦',name:'Qatar',sport:'⚽ Football'},
+    {flag:'🇸🇦',name:'Saudi Arabia',sport:'⚽ Football'},
+    {flag:'🇦🇪',name:'UAE',sport:'⚽ Football'},
+    {flag:'🇪🇬',name:'Egypt',sport:'⚽ Football'},
+    {flag:'🇩🇿',name:'Algeria',sport:'⚽ Football'},
+    {flag:'🇲🇦',name:'Morocco',sport:'⚽ Football'},
+    {flag:'🇹🇳',name:'Tunisia',sport:'⚽ Football'},
+    {flag:'🇱🇾',name:'Libya',sport:'⚽ Football'},
+    {flag:'🇮🇶',name:'Iraq',sport:'⚽ Football'},
+    {flag:'🇯🇴',name:'Jordan',sport:'⚽ Football'},
+    {flag:'🇰🇼',name:'Kuwait',sport:'⚽ Football'},
+    {flag:'🇧🇭',name:'Bahrain',sport:'⚽ Football'},
+    {flag:'🇴🇲',name:'Oman',sport:'⚽ Football'},
+    {flag:'🇱🇧',name:'Lebanon',sport:'⚽ Football'},
+    {flag:'🇵🇸',name:'Palestine',sport:'⚽ Football'},
+    {flag:'🇾🇪',name:'Yemen',sport:'⚽ Football'},
+    {flag:'🇸🇩',name:'Sudan',sport:'⚽ Football'},
+    {flag:'🇸🇾',name:'Syria',sport:'⚽ Football'},
+  ]},
+  { region:'🌍 Europe', color:'var(--r-europe)', countries:[
+    {flag:'🇫🇷',name:'France',sport:'⚽ Ligue 1'},
+    {flag:'🇪🇸',name:'Spain',sport:'⚽ LALIGA (Connect)'},
+  ]},
+  { region:'🌏 Asia-Pacific', color:'var(--r-apac)', countries:[
+    {flag:'🇲🇾',name:'Malaysia',sport:'⚽ Football'},
+    {flag:'🇮🇩',name:'Indonesia',sport:'⚽ Football'},
+    {flag:'🇵🇭',name:'Philippines',sport:'⚽ Football'},
+    {flag:'🇹🇭',name:'Thailand',sport:'⚽ Football'},
+    {flag:'🇭🇰',name:'Hong Kong',sport:'⚽ Football'},
+    {flag:'🇦🇺',name:'Australia',sport:'🎾 Tennis'},
+    {flag:'🇳🇿',name:'New Zealand',sport:'🎾 Tennis'},
+  ]},
+  { region:'🌎 Americas', color:'var(--r-americas)', countries:[
+    {flag:'🇺🇸',name:'USA',sport:'⚽ Copa Libertadores'},
+    {flag:'🇨🇦',name:'Canada',sport:'⚽ Football'},
+  ]},
+  { region:'🇹🇷 Turkey', color:'var(--r-turkey)', countries:[
+    {flag:'🇹🇷',name:'Turkey',sport:'⚽ Süper Lig'},
+  ]},
+];
+
+// ═══════════════════════════════════════════
+// RENDER COVERAGE GRID
+// ═══════════════════════════════════════════
+function renderCoverage(){
+  const container = document.getElementById('coverage-grid');
+  container.innerHTML = COVERAGE.map(r => `
+    <div class="region-block" style="border-left:3px solid ${r.color}">
+      <div class="region-block-header">
+        <span class="region-block-icon">${r.region.split(' ')[0]}</span>
+        <span class="region-block-name" style="color:${r.color}">${r.region.substring(r.region.indexOf(' ')+1)}</span>
+        <span class="region-block-count">${r.countries.length} market${r.countries.length>1?'s':''}</span>
+      </div>
+      <div class="chips-wrap">
+        ${r.countries.map(c=>`
+          <div class="country-chip">
+            <span class="chip-flag">${c.flag}</span>
+            <div class="chip-info">
+              <span class="chip-name">${c.name}</span>
+              <span class="chip-sport">${c.sport}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+// TREE RENDERING ENGINE
+// ═══════════════════════════════════════════
+let activeProposal = null;
+
+function selectProposal(id){
+  activeProposal = id;
+  document.getElementById('card-a').classList.toggle('active', id==='A');
+  document.getElementById('card-b').classList.toggle('active', id==='B');
+  const tree = id==='A'? TREE_A : TREE_B;
+  renderTreeWrapper(tree, id);
+  document.getElementById('tree-legend').style.display = id ? 'flex' : 'none';
+}
+
+function renderTreeWrapper(tree, id){
+  const title = document.getElementById('tree-title');
+  const sub = document.getElementById('tree-sub');
+  title.textContent = tree.label;
+  sub.textContent = id==='A' ? '— Sport → Competition Group → Competition' : '— Region → Sport → Competition';
+
+  const container = document.getElementById('tree-container');
+  container.innerHTML = '';
+
+  const rootUl = document.createElement('ul');
+  rootUl.className = 'tree-root';
+  rootUl.style.listStyle='none';
+
+  tree.children.forEach(node => {
+    rootUl.appendChild(renderNode(node, 0));
+  });
+
+  container.appendChild(rootUl);
+}
+
+function renderNode(node, depth){
+  const li = document.createElement('li');
+  li.className = 'tree-li';
+  li.dataset.id = node.id;
+
+  const hasChildren = node.children && node.children.length > 0;
+
+  // node row
+  const div = document.createElement('div');
+  div.className = 'tree-node' + (hasChildren ? '' : '');
+  div.style.setProperty('--depth', depth);
+  div.style.setProperty('--node-color', node.color || 'var(--dim)');
+  if(node.tip) div.dataset.tip = node.tip;
+
+  // chevron or leaf dot
+  if(hasChildren){
+    const chev = document.createElement('span');
+    chev.className = 'node-chevron';
+    chev.textContent = '▶';
+    div.appendChild(chev);
+  } else {
+    const dot = document.createElement('span');
+    dot.className = 'node-leaf-dot';
+    dot.style.background = node.color || 'var(--dim)';
+    div.appendChild(dot);
+  }
+
+  // icon
+  const ico = document.createElement('span');
+  ico.className = 'node-icon';
+  ico.textContent = node.icon || '';
+  div.appendChild(ico);
+
+  // label
+  const lbl = document.createElement('span');
+  lbl.className = 'node-label' + (depth<=1?' bold':'');
+  lbl.style.color = depth===0 ? '#fff' : (depth===1 ? node.color || 'var(--text)' : 'var(--text)');
+  lbl.textContent = node.label;
+  div.appendChild(lbl);
+
+  // count badge
+  if(node.count){
+    const cnt = document.createElement('span');
+    cnt.className = 'node-count';
+    cnt.textContent = node.count + (node.type==='region'?' markets':' competitions');
+    div.appendChild(cnt);
+  }
+
+  // datalayer key pill (sport-level)
+  if(node.dl && depth === 1 && node.type==='sport'){
+    const pill = document.createElement('span');
+    pill.className = 'node-dl-key';
+    const k = Object.keys(node.dl)[0];
+    pill.textContent = k;
+    div.appendChild(pill);
+  }
+
+  li.appendChild(div);
+
+  // children
+  if(hasChildren){
+    const ul = document.createElement('ul');
+    ul.className = 'tree-ul';
+    ul.style.setProperty('border-left','2px solid '+node.color);
+    ul.style.setProperty('margin-left', (depth*24+22)+'px');
+    ul.style.borderLeft = '1.5px solid ' + node.color;
+    ul.style.borderLeftOpacity = '0.3';
+    ul.style.paddingLeft = '0';
+
+    node.children.forEach(child => {
+      ul.appendChild(renderNode(child, depth+1));
+    });
+
+    li.appendChild(ul);
+
+    div.addEventListener('click', e => {
+      e.stopPropagation();
+      const isOpen = ul.classList.contains('open');
+      if(isOpen){
+        ul.style.maxHeight = ul.scrollHeight+'px';
+        requestAnimationFrame(()=>{ ul.style.maxHeight='0'; ul.classList.remove('open'); });
+        div.classList.remove('expanded');
+      } else {
+        ul.classList.add('open');
+        ul.style.maxHeight = ul.scrollHeight+'px';
+        div.classList.add('expanded');
+        // after transition, let it be fluid
+        ul.addEventListener('transitionend', ()=>{ if(ul.classList.contains('open')) ul.style.maxHeight='none'; },{once:true});
+      }
+    });
+  } else {
+    // leaf — datalayer block
+    if(node.dl){
+      const dlWrap = document.createElement('div');
+      dlWrap.className='dl-block';
+      dlWrap.style.setProperty('--depth', depth);
+
+      const inner = document.createElement('div');
+      inner.className='dl-inner';
+      Object.entries(node.dl).forEach(([k,v])=>{
+        const row = document.createElement('div');
+        row.className='dl-row';
+        row.innerHTML=`<span class="dl-k">${k}</span><span class="dl-eq"> = </span><span class="dl-v">${v}</span>`;
+        inner.appendChild(row);
+      });
+      dlWrap.appendChild(inner);
+      li.appendChild(dlWrap);
+
+      div.addEventListener('click', e=>{
+        e.stopPropagation();
+        const isOpen = dlWrap.classList.contains('open');
+        if(isOpen){
+          dlWrap.style.maxHeight='0'; dlWrap.classList.remove('open');
+        } else {
+          dlWrap.classList.add('open');
+          dlWrap.style.maxHeight = dlWrap.scrollHeight+'px';
+          dlWrap.addEventListener('transitionend',()=>{ if(dlWrap.classList.contains('open')) dlWrap.style.maxHeight='none'; },{once:true});
+        }
+        div.classList.toggle('active-node');
+      });
+    }
+  }
+
+  return li;
+}
+
+function expandAll(){
+  document.querySelectorAll('.tree-ul').forEach(ul=>{
+    ul.classList.add('open');
+    ul.style.maxHeight='none';
+  });
+  document.querySelectorAll('.tree-node').forEach(n=>n.classList.add('expanded'));
+  document.querySelectorAll('.dl-block').forEach(dl=>{
+    dl.classList.add('open');
+    dl.style.maxHeight='none';
+  });
+}
+
+function collapseAll(){
+  document.querySelectorAll('.tree-ul').forEach(ul=>{
+    ul.classList.remove('open');
+    ul.style.maxHeight='0';
+  });
+  document.querySelectorAll('.tree-node').forEach(n=>n.classList.remove('expanded'));
+  document.querySelectorAll('.dl-block').forEach(dl=>{
+    dl.classList.remove('open');
+    dl.style.maxHeight='0';
+  });
+}
+
+function scrollTo(hash){
+  const el = document.querySelector(hash);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// Init
+renderCoverage();
+</script>
+</body>
+</html>
